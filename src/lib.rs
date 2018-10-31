@@ -266,7 +266,10 @@ pub fn previous_n_f64(mut f: f64, n: u32) -> f64 {
 
 // GENERAL
 
-/// maximum implementation.
+/// Maximum implementation.
+///
+/// Don't worry about propagating NaN, for our use-case, any NaN value
+/// will remain after comparison and lead to a diagnostic error.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_max {
@@ -291,6 +294,10 @@ macro_rules! afe_abs {
 /// Check if the absolute error between two values is less than epsilon,
 ///  or `| a - b | < epsilon`.
 ///
+/// * `a`       - First float.
+/// * `b`       - Second float.
+/// * `epsilon` - Absolute error tolerance between floats.
+///
 /// # Examples
 ///
 /// ```
@@ -313,7 +320,11 @@ macro_rules! assert_float_absolute_eq {
 }
 
 /// Check if the relative error between two values is less than epsilon,
-/// or `| (a - b) / max(a, b) | < epsilon`.
+/// or `| (a - b) / max(|a|, |b|) | < epsilon`.
+///
+/// * `a`       - First float.
+/// * `b`       - Second float.
+/// * `epsilon` - Relative error tolerance between floats.
 ///
 /// # Examples
 ///
@@ -329,16 +340,24 @@ macro_rules! assert_float_relative_eq {
     // Explicit epsilon, fail.
     ($a:expr, $b:expr, $epsilon:expr) => ({
         let (a, b, eps) = ($a, $b, $epsilon);
-        if a != 0.0 && b != 0.0 {
-            let r = (afe_abs!(a-b) / afe_max!(a, b)) <= eps;
-            assert!(r, "assertion failed: `|(a-b)/max(a, b)| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}", a, b, eps)
+        if a != 0.0 || b != 0.0 {
+            // Only care about the magnitude, not the sign.
+            // Also prevents a zero-division error with a negative value
+            // and 0.
+            let denom = afe_max!(afe_abs!(a), afe_abs!(b));
+            let r = (afe_abs!(a-b) / denom) <= eps;
+            assert!(r, "assertion failed: `|(a-b)/max(|a|, |b|)| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}", a, b, eps)
         }
     });
     // No explicit epsilon, use default.
     ($a:expr, $b:expr) => (assert_float_relative_eq!($a, $b, 1.0e-6));
 }
 
-/// Check if two 32-bit floats are within n steps of each other.
+/// Check if two 32-bit floats are within `n` steps of each other.
+///
+/// * `a`       - First float.
+/// * `b`       - Second float.
+/// * `n`       - Step tolerance between floats.
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -369,7 +388,11 @@ macro_rules! assert_f32_near {
     ($a:expr, $b:expr) => (assert_f32_near!($a, $b, 4));
 }
 
-/// Check if two 64-bit floats are within n steps of each other.
+/// Check if two 64-bit floats are within `n` steps of each other.
+///
+/// * `a`       - First float.
+/// * `b`       - Second float.
+/// * `n`       - Step tolerance between floats.
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -425,6 +448,12 @@ mod tests {
     #[test]
     fn relative_eq_succeed() {
         assert_float_relative_eq!(3.0, 4.0, 0.26);
+    }
+
+    #[test]
+    #[should_panic]
+    fn relative_eq_negative_zero_fail() {
+        assert_float_relative_eq!(-0.1, 0.0);
     }
 
     #[test]

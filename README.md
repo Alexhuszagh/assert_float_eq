@@ -45,7 +45,7 @@ assert_float_eq exports 4 macros, each of which provides a different heuristic f
 
 `assert_float_absolute_eq` compares to values such that the absolute value of the difference between the floats is less than epsilon (default 1e-6), or `| a - b | < epsilon`. This is the easiest-to-understand macro, since it ensures the difference between two floats is below some fixed threshold. However, for very small or very large floats, absolute comparisons can lead to fault comparisons, due to the extremely high or low precision of floating point numbers at extremes, respectively.
 
-`assert_float_relative_eq` compares to values such that the relative value of the difference between the floats is less than epsilon (default 1e-6), or `(| a - b | / max(a, b)` < epsilon`. This is another easy-to-understand macro, and works well with large floats, however, it fails for small (denormal) floats, especially 0.
+`assert_float_relative_eq` compares to values such that the relative value of the difference between the floats is less than epsilon (default 1e-6), or `(| a - b | / max(|a|, |b|)` < epsilon`. This is another easy-to-understand macro, and works well with large floats, however, it fails for small (denormal) floats, especially 0.
 
 `assert_f32_near` and `assert_f64_near` ensure two floats are within a number of steps of each other, by default, 4. This allows for a scaling precision for all values of floats, however, it may counter-intuitive due to the extremely high precision for small floats and low precision for large floats. For example, for a 32-bit float, it takes ~1e9 steps to go from 0.0 to 1e-6, however, each step for a float with a value of 3e37 increments the float by ~3e30.
 
