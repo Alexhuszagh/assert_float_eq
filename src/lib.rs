@@ -1,15 +1,15 @@
 //! Assertions that two floating point numbers are approximately equal.
 //!
 //! Floating-point equality is difficult, and therefore numerous macros
-//! are provided. At the most simple, `assert_float_absolute_eq` and
-//! `assert_float_relative_eq` check if the difference between two floats
-//! is smaller than epsilon (default 1e-6) absolutely or relatively,
-//! respectively.
+//! are provided. At the most simple, [`assert_float_absolute_eq`] and
+//! [`assert_float_relative_eq`] check if the difference between two
+//! floats is smaller than epsilon (default 1e-6) absolutely or
+//! relatively, respectively.
 //!
 //! However, due to the decreasing precision of floating-point numbers
 //! at large values, and the desire for high-stringency, macros to detect
 //! whether a floating point is within a number of "steps" of another
-//! are provided. `assert_f32_near` and `assert_f64_near` check whether
+//! are provided. [`assert_f32_near`] and [`assert_f64_near`] check whether
 //! an f32 or f64 is within n "steps" (default 4) of another, respectively.
 //! A floating-point step is an increment to the bit-wise pattern of the
 //! float, for example, if a float is represented in-memory as `0x0000FFFF`,
@@ -18,9 +18,14 @@
 //! equality checks for extremely high or low floats without sacrificing
 //! accuracy.
 //!
-//! For example, for a 32-bit float of value `3e37`, each step is ~4e30,
+//! For example, for a 32-bit float of value `3e37`, each step is `~4e30`,
 //! a gargantuan value (but only a small fraction, ~0.00001% of the total
 //! value).
+//!
+//! [`assert_float_absolute_eq`]: macro.assert_float_absolute_eq.html
+//! [`assert_float_relative_eq`]: macro.assert_float_relative_eq.html
+//! [`assert_f64_near`]: macro.assert_f64_near.html
+//! [`assert_f32_near`]: macro.assert_f32_near.html
 
 // FEATURES
 
