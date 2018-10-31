@@ -33,10 +33,11 @@ extern crate assert_float_eq;
 Finally, use the assertions like any other rust assertions:
 
 ```rust
-assert_float_absolute_eq!(3.0, 4.0, 1.0);
-assert_float_relative_eq!(4.0, 3.9, 0.03);
-assert_f32_near!(1.0e-45, 7.0e-45, 4);
-assert_f64_near!(5.0e-324, 2.5e-323, 4);
+// success
+assert_float_absolute_eq!(3.0, 4.0, 1.0);   // 4.0-3.0 <= 1.0
+assert_float_relative_eq!(4.0, 3.9, 0.03);  // (4.0-3.0) / 4.0 <= 0.3
+assert_f32_near!(1.0e-45, 7.0e-45, 4);      // exactly 4 steps away
+assert_f64_near!(5.0e-324, 2.5e-323, 4);    // exactly 4 steps away
 ```
 
 # Description

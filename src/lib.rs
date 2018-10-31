@@ -33,12 +33,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(feature="std")]
-use std::mem::transmute;
-
-#[cfg(not(feature="std"))]
-use core::mem::transmute;
-
 // IMPLEMENTATION
 
 // Make sure we export all functions so they can be visible
@@ -58,26 +52,12 @@ const U32_HIDDEN_BIT: u32 =         0x00800000;
 const U32_SIGNIFICAND_MASK: u32 =   0x007FFFFF;
 const U32_INFINITY: u32 =           0x7F800000;
 
-/// Get floating bits as an unsigned integer.
-#[inline(always)]
-#[doc(hidden)]
-pub fn as_u32(d: f32) -> u32 {
-    unsafe { transmute(d) }
-}
-
-/// Get integer bits as a float.
-#[inline(always)]
-#[doc(hidden)]
-pub fn as_f32(u: u32) -> f32 {
-    unsafe { transmute(u) }
-}
-
 /// Check if value is denormal, has leading zeros in significand.
 #[inline]
 #[doc(hidden)]
 pub fn is_denormal_f32(f: f32) -> bool
 {
-    let u = as_u32(f);
+    let u = f.to_bits();
     (u & U32_EXPONENT_MASK) == 0
 }
 
@@ -85,7 +65,7 @@ pub fn is_denormal_f32(f: f32) -> bool
 #[inline]
 #[doc(hidden)]
 pub fn sign_f32(f: f32) -> i32 {
-    let u = as_u32(f);
+    let u = f.to_bits();
     if (u & U32_SIGN_MASK) == 0 { 1 } else { -1 }
 }
 
@@ -93,7 +73,7 @@ pub fn sign_f32(f: f32) -> i32 {
 #[inline]
 #[doc(hidden)]
 pub fn significand_f32(f: f32) -> u32 {
-    let u = as_u32(f);
+    let u = f.to_bits();
     let s = u & U32_SIGNIFICAND_MASK;
     if is_denormal_f32(f) {
         s
@@ -106,15 +86,15 @@ pub fn significand_f32(f: f32) -> u32 {
 #[inline]
 #[doc(hidden)]
 pub fn next_f32(f: f32) -> f32 {
-    let u = as_u32(f);
+    let u = f.to_bits();
     if u == U32_INFINITY {
-        as_f32(U32_INFINITY)
+        f32::from_bits(U32_INFINITY)
     } else if sign_f32(f) < 0 && significand_f32(f) == 0 {
         0.0
     } else if sign_f32(f) < 0 {
-        as_f32(u - 1)
+        f32::from_bits(u - 1)
     } else {
-        as_f32(u + 1)
+        f32::from_bits(u + 1)
     }
 }
 
@@ -132,15 +112,15 @@ pub fn next_n_f32(mut f: f32, n: u32) -> f32 {
 #[inline]
 #[doc(hidden)]
 pub fn previous_f32(f: f32) -> f32 {
-    let u = as_u32(f);
+    let u = f.to_bits();
     if u == (U32_INFINITY | U32_SIGN_MASK) {
-        -as_f32(U32_INFINITY)
+        -f32::from_bits(U32_INFINITY)
     } else if sign_f32(f) < 0 {
-        as_f32(u + 1)
+        f32::from_bits(u + 1)
     } else if significand_f32(f) == 0 {
         -0.0
     } else {
-        as_f32(u - 1)
+        f32::from_bits(u - 1)
     }
 }
 
@@ -168,26 +148,12 @@ const U64_HIDDEN_BIT: u64 =         0x0010000000000000;
 const U64_SIGNIFICAND_MASK: u64 =   0x000FFFFFFFFFFFFF;
 const U64_INFINITY: u64 =           0x7FF0000000000000;
 
-/// Get floating bits as an unsigned integer.
-#[inline(always)]
-#[doc(hidden)]
-pub fn as_u64(d: f64) -> u64 {
-    unsafe { transmute(d) }
-}
-
-/// Get integer bits as a float.
-#[inline(always)]
-#[doc(hidden)]
-pub fn as_f64(u: u64) -> f64 {
-    unsafe { transmute(u) }
-}
-
 /// Check if value is denormal, has leading zeros in significand.
 #[inline]
 #[doc(hidden)]
 pub fn is_denormal_f64(f: f64) -> bool
 {
-    let u = as_u64(f);
+    let u = f.to_bits();
     (u & U64_EXPONENT_MASK) == 0
 }
 
@@ -195,7 +161,7 @@ pub fn is_denormal_f64(f: f64) -> bool
 #[inline]
 #[doc(hidden)]
 pub fn sign_f64(f: f64) -> i32 {
-    let u = as_u64(f);
+    let u = f.to_bits();
     if (u & U64_SIGN_MASK) == 0 { 1 } else { -1 }
 }
 
@@ -203,7 +169,7 @@ pub fn sign_f64(f: f64) -> i32 {
 #[inline]
 #[doc(hidden)]
 pub fn significand_f64(f: f64) -> u64 {
-    let u = as_u64(f);
+    let u = f.to_bits();
     let s = u & U64_SIGNIFICAND_MASK;
     if is_denormal_f64(f) {
         s
@@ -216,15 +182,15 @@ pub fn significand_f64(f: f64) -> u64 {
 #[inline]
 #[doc(hidden)]
 pub fn next_f64(f: f64) -> f64 {
-    let u = as_u64(f);
+    let u = f.to_bits();
     if u == U64_INFINITY {
-        as_f64(U64_INFINITY)
+        f64::from_bits(U64_INFINITY)
     } else if sign_f64(f) < 0 && significand_f64(f) == 0 {
         0.0
     } else if sign_f64(f) < 0 {
-        as_f64(u - 1)
+        f64::from_bits(u - 1)
     } else {
-        as_f64(u + 1)
+        f64::from_bits(u + 1)
     }
 }
 
@@ -242,15 +208,15 @@ pub fn next_n_f64(mut f: f64, n: u32) -> f64 {
 #[inline]
 #[doc(hidden)]
 pub fn previous_f64(f: f64) -> f64 {
-    let u = as_u64(f);
+    let u = f.to_bits();
     if u == (U64_INFINITY | U64_SIGN_MASK) {
-        -as_f64(U64_INFINITY)
+        -f64::from_bits(U64_INFINITY)
     } else if sign_f64(f) < 0 {
-        as_f64(u + 1)
+        f64::from_bits(u + 1)
     } else if significand_f64(f) == 0 {
         -0.0
     } else {
-        as_f64(u - 1)
+        f64::from_bits(u - 1)
     }
 }
 
