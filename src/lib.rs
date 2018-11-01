@@ -253,7 +253,7 @@ macro_rules! afe_absolute_error_msg {
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_relative_error_msg {
-    () => ("assertion failed: `|(a-b)/max(|a|, |b|)| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}")
+    () => ("assertion failed: `|(a-b) / a| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}")
 }
 
 /// Message for near errors.
@@ -362,13 +362,11 @@ macro_rules! afe_is_absolute_eq {
 #[doc(hidden)]
 macro_rules! afe_is_relative_eq {
     ($a:ident, $b:ident, $epsilon:ident) => (
-        if $a == 0.0 && $b == 0.0 {
-            true
+        if $a == 0.0 {
+            $b == 0.0
         } else {
             // Only care about the magnitude, not the sign.
-            // Also prevents a zero-division error with a negative value
-            // and 0.
-            let denom = afe_max!(afe_abs!($a), afe_abs!($b));
+            let denom = afe_abs!($a);
             (afe_abs!($a-$b) / denom) <= $epsilon
         }
     )
@@ -435,7 +433,7 @@ macro_rules! expect_float_absolute_eq {
 
 /// Expect the relative error between two values is less than epsilon.
 ///
-/// Returns an error if `| (a - b) / max(|a|, |b|) | > epsilon`.
+/// Returns an error if `|(a - b) / a| > epsilon`.
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
@@ -446,8 +444,8 @@ macro_rules! expect_float_absolute_eq {
 /// ```
 /// # #[macro_use] extern crate assert_float_eq;
 /// # pub fn main() {
-/// assert!(expect_float_relative_eq!(3.0, 4.0, 0.25).is_ok());
-/// assert!(expect_float_relative_eq!(3.0, 4.0, 0.20).is_err());
+/// assert!(expect_float_relative_eq!(4.0, 3.0, 0.25).is_ok());
+/// assert!(expect_float_relative_eq!(4.0, 3.0, 0.20).is_err());
 /// assert!(expect_float_relative_eq!(1.0, 0.5 + 0.5).is_ok());
 /// # }
 /// ```
@@ -574,7 +572,7 @@ macro_rules! assert_float_absolute_eq {
 
 /// Assert the relative error between two values is less than epsilon.
 ///
-/// Panics if `| (a - b) / max(|a|, |b|) | > epsilon`.
+/// Panics if `|(a - b) / a| > epsilon`.
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
@@ -585,7 +583,7 @@ macro_rules! assert_float_absolute_eq {
 /// ```
 /// # #[macro_use] extern crate assert_float_eq;
 /// # pub fn main() {
-/// assert_float_relative_eq!(3.0, 4.0, 0.25);
+/// assert_float_relative_eq!(4.0, 3.0, 0.25);
 /// assert_float_relative_eq!(1.0, 0.5 + 0.5);
 /// # }
 /// ```
@@ -595,7 +593,7 @@ macro_rules! assert_float_relative_eq {
     ($a:expr, $b:expr, $epsilon:expr) => ({
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = afe_is_relative_eq!(a, b, eps);
-        assert!(r, "assertion failed: `|(a-b)/max(|a|, |b|)| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}", a, b, eps)
+        assert!(r, afe_relative_error_msg!(), a, b, eps)
     });
     // No explicit epsilon, use default.
     ($a:expr, $b:expr) => (assert_float_relative_eq!($a, $b, 1.0e-6));
@@ -690,12 +688,12 @@ mod tests {
     #[test]
     #[should_panic]
     fn relative_eq_fail() {
-        assert_float_relative_eq!(3.0, 4.0, 0.2);
+        assert_float_relative_eq!(4.0, 3.0, 0.2);
     }
 
     #[test]
     fn relative_eq_succeed() {
-        assert_float_relative_eq!(3.0, 4.0, 0.26);
+        assert_float_relative_eq!(4.0, 3.0, 0.26);
     }
 
     #[test]
