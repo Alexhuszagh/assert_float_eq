@@ -33,11 +33,26 @@ extern crate assert_float_eq;
 Finally, use the assertions like any other rust assertions:
 
 ```rust
-// success
 assert_float_absolute_eq!(3.0, 4.0, 1.0);   // 4.0-3.0 <= 1.0
 assert_float_relative_eq!(4.0, 3.9, 0.03);  // (4.0-3.0) / 4.0 <= 0.3
 assert_f32_near!(1.0e-45, 7.0e-45, 4);      // exactly 4 steps away
 assert_f64_near!(5.0e-324, 2.5e-323, 4);    // exactly 4 steps away
+```
+
+When softer error handling is desired, assert_float_eq also includes "expectations", which return a `Result<(), T: Display>`, indicating whether the comparison was successful:
+
+```rust
+expect_float_absolute_eq!(3.0, 4.0, 1.0);   // Ok(_)
+expect_float_absolute_eq!(3.0, 4.0, 0.9);   // Err(_)
+
+expect_float_relative_eq!(4.0, 3.9, 0.03);   // Ok(_)
+expect_float_relative_eq!(4.0, 3.9, 0.02);   // Err(_)
+
+expect_f32_near!(1.0e-45, 7.0e-45, 4);       // Ok(_)
+expect_f32_near!(1.0e-45, 7.0e-45, 3);       // Err(_)
+
+expect_f64_near!(5.0e-324, 2.5e-323, 4);     // Ok(_)
+expect_f64_near!(5.0e-324, 2.5e-323, 3);     // Err(_)
 ```
 
 # Description
@@ -49,6 +64,8 @@ assert_float_eq exports 4 macros, each of which provides a different heuristic f
 `assert_float_relative_eq` compares to values such that the relative value of the difference between the floats is less than epsilon (default 1e-6), or `(| a - b | / max(|a|, |b|)` < epsilon`. This is another easy-to-understand macro, and works well with large floats, however, it fails for small (denormal) floats, especially 0.
 
 `assert_f32_near` and `assert_f64_near` ensure two floats are within a number of steps of each other, by default, 4. This allows for a scaling precision for all values of floats, however, it may counter-intuitive due to the extremely high precision for small floats and low precision for large floats. For example, for a 32-bit float, it takes ~1e9 steps to go from 0.0 to 1e-6, however, each step for a float with a value of 3e37 increments the float by ~3e30.
+
+Each of the `assert_*` macros also comes in an `expect_*` variant, which returns a [Result](https://doc.rust-lang.org/std/result/enum.Result.html) indicating if the comparison was successful.
 
 # Documentation
 
