@@ -20,7 +20,7 @@ First, add assert_float_eq to your `Cargo.toml`:
 
 ```yaml
 [dependencies]
-assert_float_eq = "1.0"
+assert_float_eq = "1"
 ```
 
 Next, import the macros in `lib.rs`:
