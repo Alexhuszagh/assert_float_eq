@@ -3,11 +3,13 @@ authors = ["Alex Huszagh <ahuszagh@gmail.com>"]
 categories = ["development-tools", "development-tools::debugging"]
 description = "Assertions for floating-point equality."
 documentation = "https://docs.rs/assert_float_eq"
+edition = "2018"
 keywords = ["unittesting", "float"]
 license = "MIT/Apache-2.0"
 name = "assert_float_eq"
 readme = "README.md"
 repository = "https://github.com/AlexHuszagh/assert_float_eq"
+rust-version = "1.31"
 version = "1.1.3"
 
 [badges]
