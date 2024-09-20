@@ -3,6 +3,7 @@ authors = ["Alex Huszagh <ahuszagh@gmail.com>"]
 categories = ["development-tools", "development-tools::debugging"]
 description = "Assertions for floating-point equality."
 documentation = "https://docs.rs/assert_float_eq"
+edition = "2018"
 keywords = ["unittesting", "float"]
 license = "MIT/Apache-2.0"
 name = "assert_float_eq"
