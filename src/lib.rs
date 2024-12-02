@@ -441,8 +441,20 @@ macro_rules! afe_is_relative_eq {
             $b == 0.0
         } else {
             // Only care about the magnitude, not the sign.
+            // NOTE: We can have an unresolved type `{float}` for literals in which case we
+            // only want to check if it's the exact size.
             let denom = $crate::afe_abs!($a);
-            ($crate::afe_abs!($a - $b) / denom) <= $epsilon
+            if (core::mem::size_of_val(&denom) == 4 && (denom as f32).is_nan())
+                || (core::mem::size_of_val(&denom) == 8 && (denom as f64).is_nan())
+            {
+                false
+            } else if (core::mem::size_of_val(&denom) == 4 && (denom as f32).is_infinite())
+                || (core::mem::size_of_val(&denom) == 8 && (denom as f64).is_infinite())
+            {
+                true
+            } else {
+                ($crate::afe_abs!($a - $b) / denom) <= $epsilon
+            }
         }
     };
 }
@@ -544,7 +556,9 @@ macro_rules! expect_float_absolute_ne {
 
 /// Expect the relative error between two values is less than epsilon.
 ///
-/// Returns an error if `|(a - b) / a| > epsilon`.
+/// Returns an error if `|(a - b) / a| > epsilon`. If `a.is_infinite()`,
+/// then the result will always be ok. If `a.is_nan()`, then the result
+/// will always be an error.
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
@@ -578,7 +592,9 @@ macro_rules! expect_float_relative_eq {
 
 /// Expect the relative error between two values is greater than epsilon.
 ///
-/// Returns an error if `|(a - b) / a| <= epsilon`.
+/// Returns an error if `|(a - b) / a| <= epsilon`. If `a.is_infinite()`,
+/// then the result will always be an error. If `a.is_nan()`, then the
+/// result will always be ok.
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
@@ -843,7 +859,8 @@ macro_rules! assert_float_absolute_ne {
 
 /// Assert the relative error between two values is less than epsilon.
 ///
-/// Panics if `|(a - b) / a| > epsilon`.
+/// Panics if `|(a - b) / a| > epsilon`. If `a.is_infinite()`, then this
+/// will never panic. If `a.is_nan()`, then this will always panic.
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
@@ -875,7 +892,8 @@ macro_rules! assert_float_relative_eq {
 
 /// Assert the relative error between two values is greater than epsilon.
 ///
-/// Panics if `|(a - b) / a| <= epsilon`.
+/// Panics if `|(a - b) / a| <= epsilon`. If `a.is_infinite()`, then this
+/// will always panic. If `a.is_nan()`, then this will never panic.
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
@@ -1060,6 +1078,10 @@ macro_rules! assert_f64_far {
 
 #[cfg(test)]
 mod tests {
+    use core::f32;
+
+    use super::*;
+
     #[test]
     #[should_panic]
     fn absolute_eq_fail() {
@@ -1119,5 +1141,17 @@ mod tests {
     #[test]
     fn f64_far_succeed() {
         assert_f64_far!(5.0e-324, 3e-323, 4);
+    }
+
+    #[test]
+    fn issue_03() {
+        assert!(expect_float_relative_eq!(f32::INFINITY, f32::MAX, f32::INFINITY).is_ok());
+        assert!(expect_float_relative_eq!(f32::INFINITY, f32::MAX, 0.0).is_ok());
+        assert!(expect_float_relative_eq!(f32::MAX, f32::INFINITY, f32::INFINITY).is_ok());
+
+        let error = expect_float_relative_eq!(f32::MAX, f32::INFINITY, 1.0).unwrap_err();
+        assert_eq!(error.a, f32::MAX);
+        assert_eq!(error.b, f32::INFINITY);
+        assert_eq!(error.epsilon, 1.0);
     }
 }
