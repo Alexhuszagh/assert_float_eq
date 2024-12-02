@@ -46,17 +46,16 @@ use core::fmt::{Debug, Display, Formatter, Result as FmtResult};
 // Exponent:    01111111100000000000000000000000
 // Hidden:      00000000100000000000000000000000
 // Fraction:    00000000011111111111111111111111
-const U32_SIGN_MASK: u32 =          0x80000000;
-const U32_EXPONENT_MASK: u32 =      0x7F800000;
-const U32_HIDDEN_BIT: u32 =         0x00800000;
-const U32_SIGNIFICAND_MASK: u32 =   0x007FFFFF;
-const U32_INFINITY: u32 =           0x7F800000;
+const U32_SIGN_MASK: u32 = 0x80000000;
+const U32_EXPONENT_MASK: u32 = 0x7F800000;
+const U32_HIDDEN_BIT: u32 = 0x00800000;
+const U32_SIGNIFICAND_MASK: u32 = 0x007FFFFF;
+const U32_INFINITY: u32 = 0x7F800000;
 
 /// Check if value is denormal, has leading zeros in significand.
 #[inline]
 #[doc(hidden)]
-pub fn is_denormal_f32(f: f32) -> bool
-{
+pub fn is_denormal_f32(f: f32) -> bool {
     let u = f.to_bits();
     (u & U32_EXPONENT_MASK) == 0
 }
@@ -66,7 +65,11 @@ pub fn is_denormal_f32(f: f32) -> bool
 #[doc(hidden)]
 pub fn sign_f32(f: f32) -> i32 {
     let u = f.to_bits();
-    if (u & U32_SIGN_MASK) == 0 { 1 } else { -1 }
+    if (u & U32_SIGN_MASK) == 0 {
+        1
+    } else {
+        -1
+    }
 }
 
 /// Get the significand of a 32-bit float.
@@ -142,17 +145,16 @@ pub fn previous_n_f32(mut f: f32, n: u32) -> f32 {
 // Exponent:    0111111111110000000000000000000000000000000000000000000000000000
 // Hidden:      0000000000010000000000000000000000000000000000000000000000000000
 // Significand: 0000000000001111111111111111111111111111111111111111111111111111
-const U64_SIGN_MASK: u64 =          0x8000000000000000;
-const U64_EXPONENT_MASK: u64 =      0x7FF0000000000000;
-const U64_HIDDEN_BIT: u64 =         0x0010000000000000;
-const U64_SIGNIFICAND_MASK: u64 =   0x000FFFFFFFFFFFFF;
-const U64_INFINITY: u64 =           0x7FF0000000000000;
+const U64_SIGN_MASK: u64 = 0x8000000000000000;
+const U64_EXPONENT_MASK: u64 = 0x7FF0000000000000;
+const U64_HIDDEN_BIT: u64 = 0x0010000000000000;
+const U64_SIGNIFICAND_MASK: u64 = 0x000FFFFFFFFFFFFF;
+const U64_INFINITY: u64 = 0x7FF0000000000000;
 
 /// Check if value is denormal, has leading zeros in significand.
 #[inline]
 #[doc(hidden)]
-pub fn is_denormal_f64(f: f64) -> bool
-{
+pub fn is_denormal_f64(f: f64) -> bool {
     let u = f.to_bits();
     (u & U64_EXPONENT_MASK) == 0
 }
@@ -162,7 +164,11 @@ pub fn is_denormal_f64(f: f64) -> bool
 #[doc(hidden)]
 pub fn sign_f64(f: f64) -> i32 {
     let u = f.to_bits();
-    if (u & U64_SIGN_MASK) == 0 { 1 } else { -1 }
+    if (u & U64_SIGN_MASK) == 0 {
+        1
+    } else {
+        -1
+    }
 }
 
 /// Get the significand of a 64-bit float.
@@ -236,28 +242,36 @@ pub fn previous_n_f64(mut f: f64, n: u32) -> f64 {
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_absolute_eq_error_msg {
-    () => ("assertion failed: `|a-b| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}")
+    () => {
+        "assertion failed: `|a-b| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}"
+    };
 }
 
 /// Message for absolute errors.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_absolute_ne_error_msg {
-    () => ("assertion failed: `|a-b| >= epsilon` a: {:?}, b: {:?}, epsilon: {:?}")
+    () => {
+        "assertion failed: `|a-b| >= epsilon` a: {:?}, b: {:?}, epsilon: {:?}"
+    };
 }
 
 /// Message for relative errors.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_relative_eq_error_msg {
-    () => ("assertion failed: `|(a-b) / a| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}")
+    () => {
+        "assertion failed: `|(a-b) / a| < epsilon` a: {:?}, b: {:?}, epsilon: {:?}"
+    };
 }
 
 /// Message for relative errors.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_relative_ne_error_msg {
-    () => ("assertion failed: `|(a-b) / a| >= epsilon` a: {:?}, b: {:?}, epsilon: {:?}")
+    () => {
+        "assertion failed: `|(a-b) / a| >= epsilon` a: {:?}, b: {:?}, epsilon: {:?}"
+    };
 }
 
 /// Message for near errors.
@@ -277,19 +291,23 @@ macro_rules! afe_far_error_msg {
 /// Generate the classes for the threshold errors.
 #[doc(hidden)]
 macro_rules! threshold_error_impl {
-    ($t:ident, $msg:expr) => (
+    ($t:ident, $msg:expr) => {
         /// Error result for an error threshold.
         #[derive(Debug)]
         #[doc(hidden)]
         pub struct $t<Float: Debug> {
             a: Float,
             b: Float,
-            epsilon: Float
+            epsilon: Float,
         }
 
         impl<Float: Debug> $t<Float> {
             pub fn new(a: Float, b: Float, epsilon: Float) -> Self {
-                $t{ a: a, b: b, epsilon: epsilon}
+                $t {
+                    a,
+                    b,
+                    epsilon,
+                }
             }
         }
 
@@ -298,7 +316,7 @@ macro_rules! threshold_error_impl {
                 write!(f, $msg, self.a, self.b, self.epsilon)
             }
         }
-    )
+    };
 }
 
 threshold_error_impl!(AbsoluteEqError, afe_absolute_eq_error_msg!());
@@ -314,12 +332,18 @@ pub struct FloatNearError<Float: Debug, Int: Debug> {
     b: Float,
     n: Int,
     previous: Float,
-    next: Float
+    next: Float,
 }
 
 impl<Float: Debug, Int: Debug> FloatNearError<Float, Int> {
     pub fn new(a: Float, b: Float, n: Int, previous: Float, next: Float) -> Self {
-        Self { a, b, n, previous, next }
+        Self {
+            a,
+            b,
+            n,
+            previous,
+            next,
+        }
     }
 }
 
@@ -337,12 +361,18 @@ pub struct FloatFarError<Float: Debug, Int: Debug> {
     b: Float,
     n: Int,
     previous: Float,
-    next: Float
+    next: Float,
 }
 
 impl<Float: Debug, Int: Debug> FloatFarError<Float, Int> {
     pub fn new(a: Float, b: Float, n: Int, previous: Float, next: Float) -> Self {
-        Self { a, b, n, previous, next }
+        Self {
+            a,
+            b,
+            n,
+            previous,
+            next,
+        }
     }
 }
 
@@ -355,10 +385,9 @@ impl<Float: Debug, Int: Debug> Display for FloatFarError<Float, Int> {
 /// Convert a boolean and String to a result.
 #[inline(always)]
 #[doc(hidden)]
-pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T>
-{
+pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T> {
     match r {
-        true  => Ok(()),
+        true => Ok(()),
         false => Err(err),
     }
 }
@@ -370,66 +399,76 @@ pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T>
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_max {
-    ($a:expr, $b:expr) => ({
+    ($a:expr, $b:expr) => {{
         let (a, b) = ($a, $b);
-        if a < b { b } else { a }
-    })
+        if a < b {
+            b
+        } else {
+            a
+        }
+    }};
 }
 
 /// Absolute value implementation.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_abs {
-    ($f:expr) => ({
+    ($f:expr) => {{
         let f = $f;
-        if f < 0.0 { -f } else { f }
-    })
+        if f < 0.0 {
+            -f
+        } else {
+            f
+        }
+    }};
 }
 
 /// Returns true if the values are absolutely equal within a tolerance.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_is_absolute_eq {
-    ($a:ident, $b:ident, $epsilon:ident) => ($crate::afe_abs!($a - $b) <= $epsilon)
+    ($a:ident, $b:ident, $epsilon:ident) => {
+        $crate::afe_abs!($a - $b) <= $epsilon
+    };
 }
 
 /// Returns true if the values are relatively equal within a tolerance.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_is_relative_eq {
-    ($a:ident, $b:ident, $epsilon:ident) => (
+    ($a:ident, $b:ident, $epsilon:ident) => {
         if $a == 0.0 {
             $b == 0.0
         } else {
             // Only care about the magnitude, not the sign.
             let denom = $crate::afe_abs!($a);
-            ($crate::afe_abs!($a-$b) / denom) <= $epsilon
+            ($crate::afe_abs!($a - $b) / denom) <= $epsilon
         }
-    )
+    };
 }
 
 /// Returns true if two 32-bit floats are within n steps of each other.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_is_f32_near {
-    ($a:ident, $b:ident, $n:ident) => ({
+    ($a:ident, $b:ident, $n:ident) => {{
         let previous = $crate::previous_n_f32($a, $n);
         let next = $crate::next_n_f32($a, $n);
         let r = $b >= previous && $b <= next;
         (r, previous, next)
-    })
+    }};
 }
 
 /// Returns true if two 64-bit floats are within n steps of each other.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_is_f64_near {
-    ($a:ident, $b:ident, $n:ident) => ({
+    ($a:ident, $b:ident, $n:ident) => {{
         let previous = $crate::previous_n_f64($a, $n);
         let next = $crate::next_n_f64($a, $n);
         let r = $b >= previous && $b <= next;
         (r, previous, next)
-    })
+    }};
 }
 
 // API
@@ -457,14 +496,16 @@ macro_rules! afe_is_f64_near {
 #[macro_export]
 macro_rules! expect_float_absolute_eq {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_absolute_eq!(a, b, eps);
         let e = $crate::AbsoluteEqError::new(a, b, eps);
         $crate::bool_to_result(r, e)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::expect_float_absolute_eq!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::expect_float_absolute_eq!($a, $b, 1.0e-6)
+    };
 }
 
 /// Expect the absolute error between two values is greater than epsilon.
@@ -487,14 +528,16 @@ macro_rules! expect_float_absolute_eq {
 #[macro_export]
 macro_rules! expect_float_absolute_ne {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_absolute_eq!(a, b, eps);
         let e = $crate::AbsoluteNeError::new(a, b, eps);
         $crate::bool_to_result(!r, e)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::expect_float_absolute_ne!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::expect_float_absolute_ne!($a, $b, 1.0e-6)
+    };
 }
 
 /// Expect the relative error between two values is less than epsilon.
@@ -518,14 +561,16 @@ macro_rules! expect_float_absolute_ne {
 #[macro_export]
 macro_rules! expect_float_relative_eq {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_relative_eq!(a, b, eps);
         let e = $crate::RelativeEqError::new(a, b, eps);
         $crate::bool_to_result(r, e)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::expect_float_relative_eq!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::expect_float_relative_eq!($a, $b, 1.0e-6)
+    };
 }
 
 /// Expect the relative error between two values is greater than epsilon.
@@ -549,14 +594,16 @@ macro_rules! expect_float_relative_eq {
 #[macro_export]
 macro_rules! expect_float_relative_ne {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_relative_eq!(a, b, eps);
         let e = $crate::RelativeNeError::new(a, b, eps);
         $crate::bool_to_result(!r, e)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::expect_float_relative_ne!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::expect_float_relative_ne!($a, $b, 1.0e-6)
+    };
 }
 
 /// Expect two 32-bit floats are within `n` steps of each other.
@@ -587,14 +634,16 @@ macro_rules! expect_float_relative_ne {
 #[macro_export]
 macro_rules! expect_f32_near {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f32_near!(a, b, n);
         let e = $crate::FloatNearError::new(a, b, n, previous, next);
         $crate::bool_to_result(r, e)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::expect_f32_near!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::expect_f32_near!($a, $b, 4)
+    };
 }
 
 /// Expect two 32-bit floats are not within `n` steps of each other.
@@ -625,14 +674,16 @@ macro_rules! expect_f32_near {
 #[macro_export]
 macro_rules! expect_f32_far {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f32_near!(a, b, n);
         let e = $crate::FloatFarError::new(a, b, n, previous, next);
         $crate::bool_to_result(!r, e)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::expect_f32_far!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::expect_f32_far!($a, $b, 4)
+    };
 }
 
 /// Expect two 64-bit floats are within `n` steps of each other.
@@ -664,14 +715,16 @@ macro_rules! expect_f32_far {
 #[macro_export]
 macro_rules! expect_f64_near {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f64_near!(a, b, n);
         let e = $crate::FloatNearError::new(a, b, n, previous, next);
         $crate::bool_to_result(r, e)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::expect_f64_near!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::expect_f64_near!($a, $b, 4)
+    };
 }
 
 /// Expect two 64-bit floats are not within `n` steps of each other.
@@ -703,14 +756,16 @@ macro_rules! expect_f64_near {
 #[macro_export]
 macro_rules! expect_f64_far {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f64_near!(a, b, n);
         let e = $crate::FloatFarError::new(a, b, n, previous, next);
         $crate::bool_to_result(!r, e)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::expect_f64_far!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::expect_f64_far!($a, $b, 4)
+    };
 }
 
 // ASSERT
@@ -738,13 +793,15 @@ macro_rules! expect_f64_far {
 #[macro_export]
 macro_rules! assert_float_absolute_eq {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_absolute_eq!(a, b, eps);
         assert!(r, $crate::afe_absolute_eq_error_msg!(), a, b, eps)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::assert_float_absolute_eq!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::assert_float_absolute_eq!($a, $b, 1.0e-6)
+    };
 }
 
 /// Assert the absolute error between two values is greater than epsilon.
@@ -767,13 +824,15 @@ macro_rules! assert_float_absolute_eq {
 #[macro_export]
 macro_rules! assert_float_absolute_ne {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_absolute_eq!(a, b, eps);
         assert!(!r, $crate::afe_absolute_ne_error_msg!(), a, b, eps)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::assert_float_absolute_ne!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::assert_float_absolute_ne!($a, $b, 1.0e-6)
+    };
 }
 
 /// Assert the relative error between two values is less than epsilon.
@@ -796,13 +855,15 @@ macro_rules! assert_float_absolute_ne {
 #[macro_export]
 macro_rules! assert_float_relative_eq {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_relative_eq!(a, b, eps);
         assert!(r, $crate::afe_relative_eq_error_msg!(), a, b, eps)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::assert_float_relative_eq!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::assert_float_relative_eq!($a, $b, 1.0e-6)
+    };
 }
 
 /// Assert the relative error between two values is greater than epsilon.
@@ -825,13 +886,15 @@ macro_rules! assert_float_relative_eq {
 #[macro_export]
 macro_rules! assert_float_relative_ne {
     // Explicit epsilon, fail.
-    ($a:expr, $b:expr, $epsilon:expr) => ({
+    ($a:expr, $b:expr, $epsilon:expr) => {{
         let (a, b, eps) = ($a, $b, $epsilon);
         let r = $crate::afe_is_relative_eq!(a, b, eps);
         assert!(!r, $crate::afe_relative_ne_error_msg!(), a, b, eps)
-    });
+    }};
     // No explicit epsilon, use default.
-    ($a:expr, $b:expr) => ($crate::assert_float_relative_ne!($a, $b, 1.0e-6));
+    ($a:expr, $b:expr) => {
+        $crate::assert_float_relative_ne!($a, $b, 1.0e-6)
+    };
 }
 
 /// Assert two 32-bit floats are within `n` steps of each other.
@@ -860,13 +923,15 @@ macro_rules! assert_float_relative_ne {
 #[macro_export]
 macro_rules! assert_f32_near {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f32_near!(a, b, n);
         assert!(r, $crate::afe_near_error_msg!(), a, b, n, previous, next)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::assert_f32_near!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::assert_f32_near!($a, $b, 4)
+    };
 }
 
 /// Assert two 32-bit floats are not within `n` steps of each other.
@@ -896,13 +961,15 @@ macro_rules! assert_f32_near {
 #[macro_export]
 macro_rules! assert_f32_far {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f32_near!(a, b, n);
         assert!(!r, $crate::afe_far_error_msg!(), a, b, n, previous, next)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::assert_f32_far!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::assert_f32_far!($a, $b, 4)
+    };
 }
 
 /// Assert two 64-bit floats are within `n` steps of each other.
@@ -931,13 +998,15 @@ macro_rules! assert_f32_far {
 #[macro_export]
 macro_rules! assert_f64_near {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f64_near!(a, b, n);
         assert!(r, $crate::afe_near_error_msg!(), a, b, n, previous, next)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::assert_f64_near!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::assert_f64_near!($a, $b, 4)
+    };
 }
 
 /// Assert two 64-bit floats are not within `n` steps of each other.
@@ -967,13 +1036,15 @@ macro_rules! assert_f64_near {
 #[macro_export]
 macro_rules! assert_f64_far {
     // Explicit steps.
-    ($a:expr, $b:expr, $n:expr) => ({
+    ($a:expr, $b:expr, $n:expr) => {{
         let (a, b, n) = ($a, $b, $n);
         let (r, previous, next) = $crate::afe_is_f64_near!(a, b, n);
         assert!(!r, $crate::afe_far_error_msg!(), a, b, n, previous, next)
-    });
+    }};
     // No explicit steps, use default.
-    ($a:expr, $b:expr) => ($crate::assert_f64_far!($a, $b, 4));
+    ($a:expr, $b:expr) => {
+        $crate::assert_f64_far!($a, $b, 4)
+    };
 }
 
 // TESTS
