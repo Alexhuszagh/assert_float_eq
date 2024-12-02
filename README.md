@@ -1,7 +1,5 @@
-assert_float_eq
-===============
+# assert_float_eq
 
-[![Build Status](https://api.travis-ci.org/Alexhuszagh/assert_float_eq.svg?branch=master)](https://travis-ci.org/Alexhuszagh/assert_float_eq)
 [![Latest Version](https://img.shields.io/crates/v/assert_float_eq.svg)](https://crates.io/crates/assert_float_eq)
 
 Assertions to check floating-point equality within a user-defined tolerance. Works in both a `std` and `no_std` context.
@@ -14,7 +12,7 @@ Assertions to check floating-point equality within a user-defined tolerance. Wor
 - [License](#license)
 - [Contributing](#contributing)
 
-# Getting Started
+## Getting Started
 
 First, add assert_float_eq to your `Cargo.toml`:
 
@@ -55,7 +53,7 @@ expect_f64_near!(5.0e-324, 2.5e-323, 4);     // Ok(_)
 expect_f64_near!(5.0e-324, 2.5e-323, 3);     // Err(_)
 ```
 
-# Description
+## Description
 
 assert_float_eq exports 4 macros, each of which provides a different heuristic for comparing floating-point numbers.
 
@@ -67,14 +65,14 @@ assert_float_eq exports 4 macros, each of which provides a different heuristic f
 
 Each of the `assert_*` macros also comes in an `expect_*` variant, which returns a [Result](https://doc.rust-lang.org/std/result/enum.Result.html) indicating if the comparison was successful.
 
-# Documentation
+## Documentation
 
 assert_float_eq's documentation can be found on [docs.rs](https://docs.rs/assert_float_eq).
 
-# License
+## License
 
 assert_float_eq is dual licensed under the Apache 2.0 license as well as the MIT license. See the LICENCE-MIT and the LICENCE-APACHE files for the licenses.
 
-# Contributing
+## Contributing
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in assert_float_eq by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
