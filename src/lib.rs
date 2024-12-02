@@ -31,16 +31,6 @@
 //! [`assert_f64_near`]: macro.assert_f64_near.html
 //! [`assert_f32_near`]: macro.assert_f32_near.html
 
-// FEATURES
-
-// Allow fully-functional implementation even with no-std.
-
-#![cfg_attr(not(feature = "std"), no_std)]
-
-#[cfg(feature = "std")]
-use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
-
-#[cfg(not(feature = "std"))]
 use core::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 // IMPLEMENTATION
