@@ -481,7 +481,8 @@ macro_rules! afe_is_f64_near {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Absolute error tolerance between floats.
+/// * `epsilon` - Absolute error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -514,7 +515,8 @@ macro_rules! expect_float_absolute_eq {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Absolute error tolerance between floats.
+/// * `epsilon` - Absolute error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -546,7 +548,8 @@ macro_rules! expect_float_absolute_ne {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Relative error tolerance between floats.
+/// * `epsilon` - Relative error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -579,7 +582,8 @@ macro_rules! expect_float_relative_eq {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Relative error tolerance between floats.
+/// * `epsilon` - Relative error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -613,7 +617,7 @@ macro_rules! expect_float_relative_ne {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -653,7 +657,7 @@ macro_rules! expect_f32_near {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -693,7 +697,7 @@ macro_rules! expect_f32_far {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -734,7 +738,7 @@ macro_rules! expect_f64_near {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -776,7 +780,8 @@ macro_rules! expect_f64_far {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Absolute error tolerance between floats.
+/// * `epsilon` - Absolute error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -810,7 +815,8 @@ macro_rules! assert_float_absolute_eq {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Absolute error tolerance between floats.
+/// * `epsilon` - Absolute error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -841,7 +847,8 @@ macro_rules! assert_float_absolute_ne {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Relative error tolerance between floats.
+/// * `epsilon` - Relative error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -872,7 +879,8 @@ macro_rules! assert_float_relative_eq {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `epsilon` - Relative error tolerance between floats.
+/// * `epsilon` - Relative error tolerance between floats (defaults to
+///   `1.0e-6`).
 ///
 /// # Examples
 ///
@@ -903,7 +911,7 @@ macro_rules! assert_float_relative_ne {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -941,7 +949,7 @@ macro_rules! assert_f32_near {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -978,7 +986,7 @@ macro_rules! assert_f32_far {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
@@ -1016,7 +1024,7 @@ macro_rules! assert_f64_near {
 ///
 /// * `a`       - First float.
 /// * `b`       - Second float.
-/// * `n`       - Step tolerance between floats.
+/// * `n`       - Step tolerance between floats (defaults to `4`).
 ///
 /// Each step is derived from the previous float by incrementing
 /// the float's bits, as if they were an integer, by 1.
