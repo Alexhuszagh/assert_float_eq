@@ -384,7 +384,6 @@ impl<Float: Debug, Int: Debug> Display for FloatFarError<Float, Int> {
 }
 
 /// Convert a boolean and String to a result.
-#[inline(always)]
 #[doc(hidden)]
 pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T> {
     if r {
