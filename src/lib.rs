@@ -23,7 +23,7 @@
 //! value).
 //!
 //! In addition to the `assert_*` macros, which panic if the condition
-//! is not true, assert_float_eq also has `expect_*` macros, which
+//! is not true, `assert_float_eq` also has `expect_*` macros, which
 //! return a `Result<(), T: Display>`, when panicking is not desirable.
 //!
 //! [`assert_float_absolute_eq`]: macro.assert_float_absolute_eq.html
@@ -31,6 +31,7 @@
 //! [`assert_f64_near`]: macro.assert_f64_near.html
 //! [`assert_f32_near`]: macro.assert_f32_near.html
 
+#![no_std]
 use core::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 // IMPLEMENTATION
@@ -46,11 +47,11 @@ use core::fmt::{Debug, Display, Formatter, Result as FmtResult};
 // Exponent:    01111111100000000000000000000000
 // Hidden:      00000000100000000000000000000000
 // Fraction:    00000000011111111111111111111111
-const U32_SIGN_MASK: u32 = 0x80000000;
-const U32_EXPONENT_MASK: u32 = 0x7F800000;
-const U32_HIDDEN_BIT: u32 = 0x00800000;
-const U32_SIGNIFICAND_MASK: u32 = 0x007FFFFF;
-const U32_INFINITY: u32 = 0x7F800000;
+const U32_SIGN_MASK: u32 = 0x8000_0000;
+const U32_EXPONENT_MASK: u32 = 0x7F80_0000;
+const U32_HIDDEN_BIT: u32 = 0x0080_0000;
+const U32_SIGNIFICAND_MASK: u32 = 0x007F_FFFF;
+const U32_INFINITY: u32 = 0x7F80_0000;
 
 /// Check if value is denormal, has leading zeros in significand.
 #[inline]
@@ -145,11 +146,11 @@ pub fn previous_n_f32(mut f: f32, n: u32) -> f32 {
 // Exponent:    0111111111110000000000000000000000000000000000000000000000000000
 // Hidden:      0000000000010000000000000000000000000000000000000000000000000000
 // Significand: 0000000000001111111111111111111111111111111111111111111111111111
-const U64_SIGN_MASK: u64 = 0x8000000000000000;
-const U64_EXPONENT_MASK: u64 = 0x7FF0000000000000;
-const U64_HIDDEN_BIT: u64 = 0x0010000000000000;
-const U64_SIGNIFICAND_MASK: u64 = 0x000FFFFFFFFFFFFF;
-const U64_INFINITY: u64 = 0x7FF0000000000000;
+const U64_SIGN_MASK: u64 = 0x8000_0000_0000_0000;
+const U64_EXPONENT_MASK: u64 = 0x7FF0_0000_0000_0000;
+const U64_HIDDEN_BIT: u64 = 0x0010_0000_0000_0000;
+const U64_SIGNIFICAND_MASK: u64 = 0x000F_FFFF_FFFF_FFFF;
+const U64_INFINITY: u64 = 0x7FF0_0000_0000_0000;
 
 /// Check if value is denormal, has leading zeros in significand.
 #[inline]
@@ -383,53 +384,23 @@ impl<Float: Debug, Int: Debug> Display for FloatFarError<Float, Int> {
 }
 
 /// Convert a boolean and String to a result.
-#[inline(always)]
 #[doc(hidden)]
 pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T> {
-    match r {
-        true => Ok(()),
-        false => Err(err),
+    if r {
+        Ok(())
+    } else {
+        Err(err)
     }
-}
-
-/// Maximum implementation.
-///
-/// Don't worry about propagating NaN, for our use-case, any NaN value
-/// will remain after comparison and lead to a diagnostic error.
-#[macro_export]
-#[doc(hidden)]
-macro_rules! afe_max {
-    ($a:expr, $b:expr) => {{
-        let (a, b) = ($a, $b);
-        if a < b {
-            b
-        } else {
-            a
-        }
-    }};
-}
-
-/// Absolute value implementation.
-#[macro_export]
-#[doc(hidden)]
-macro_rules! afe_abs {
-    ($f:expr) => {{
-        let f = $f;
-        if f < 0.0 {
-            -f
-        } else {
-            f
-        }
-    }};
 }
 
 /// Returns true if the values are absolutely equal within a tolerance.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_is_absolute_eq {
-    ($a:ident, $b:ident, $epsilon:ident) => {
-        $crate::afe_abs!($a - $b) <= $epsilon
-    };
+    ($a:ident, $b:ident, $epsilon:ident) => {{
+        let [a, b, epsilon] = [$a, $b, $epsilon].map(f64::from);
+        (a - b).abs() <= epsilon
+    }};
 }
 
 /// Returns true if the values are relatively equal within a tolerance.
@@ -443,17 +414,13 @@ macro_rules! afe_is_relative_eq {
             // Only care about the magnitude, not the sign.
             // NOTE: We can have an unresolved type `{float}` for literals in which case we
             // only want to check if it's the exact size.
-            let denom = $crate::afe_abs!($a);
-            if (core::mem::size_of_val(&denom) == 4 && (denom as f32).is_nan())
-                || (core::mem::size_of_val(&denom) == 8 && (denom as f64).is_nan())
-            {
+            let [a, b, epsilon] = [$a, $b, $epsilon].map(f64::from);
+            if a.is_nan() {
                 false
-            } else if (core::mem::size_of_val(&denom) == 4 && (denom as f32).is_infinite())
-                || (core::mem::size_of_val(&denom) == 8 && (denom as f64).is_infinite())
-            {
+            } else if a.is_infinite() {
                 true
             } else {
-                ($crate::afe_abs!($a - $b) / denom) <= $epsilon
+                ((a - b).abs() / a.abs()) <= epsilon
             }
         }
     };
