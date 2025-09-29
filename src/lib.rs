@@ -23,7 +23,7 @@
 //! value).
 //!
 //! In addition to the `assert_*` macros, which panic if the condition
-//! is not true, assert_float_eq also has `expect_*` macros, which
+//! is not true, `assert_float_eq` also has `expect_*` macros, which
 //! return a `Result<(), T: Display>`, when panicking is not desirable.
 //!
 //! [`assert_float_absolute_eq`]: macro.assert_float_absolute_eq.html
