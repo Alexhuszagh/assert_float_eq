@@ -387,9 +387,10 @@ impl<Float: Debug, Int: Debug> Display for FloatFarError<Float, Int> {
 #[inline(always)]
 #[doc(hidden)]
 pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T> {
-    match r {
-        true => Ok(()),
-        false => Err(err),
+    if r {
+        Ok(())
+    } else {
+        Err(err)
     }
 }
 
