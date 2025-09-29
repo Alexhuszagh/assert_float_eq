@@ -393,44 +393,14 @@ pub fn bool_to_result<T: Display>(r: bool, err: T) -> Result<(), T> {
     }
 }
 
-/// Maximum implementation.
-///
-/// Don't worry about propagating NaN, for our use-case, any NaN value
-/// will remain after comparison and lead to a diagnostic error.
-#[macro_export]
-#[doc(hidden)]
-macro_rules! afe_max {
-    ($a:expr, $b:expr) => {{
-        let (a, b) = ($a, $b);
-        if a < b {
-            b
-        } else {
-            a
-        }
-    }};
-}
-
-/// Absolute value implementation.
-#[macro_export]
-#[doc(hidden)]
-macro_rules! afe_abs {
-    ($f:expr) => {{
-        let f = $f;
-        if f < 0.0 {
-            -f
-        } else {
-            f
-        }
-    }};
-}
-
 /// Returns true if the values are absolutely equal within a tolerance.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! afe_is_absolute_eq {
-    ($a:ident, $b:ident, $epsilon:ident) => {
-        $crate::afe_abs!($a - $b) <= $epsilon
-    };
+    ($a:ident, $b:ident, $epsilon:ident) => {{
+        let [a, b, epsilon] = [$a, $b, $epsilon].map(f64::from);
+        (a - b).abs() <= epsilon
+    }};
 }
 
 /// Returns true if the values are relatively equal within a tolerance.
@@ -444,17 +414,13 @@ macro_rules! afe_is_relative_eq {
             // Only care about the magnitude, not the sign.
             // NOTE: We can have an unresolved type `{float}` for literals in which case we
             // only want to check if it's the exact size.
-            let denom = $crate::afe_abs!($a);
-            if (core::mem::size_of_val(&denom) == 4 && (denom as f32).is_nan())
-                || (core::mem::size_of_val(&denom) == 8 && (denom as f64).is_nan())
-            {
+            let [a, b, epsilon] = [$a, $b, $epsilon].map(f64::from);
+            if a.is_nan() {
                 false
-            } else if (core::mem::size_of_val(&denom) == 4 && (denom as f32).is_infinite())
-                || (core::mem::size_of_val(&denom) == 8 && (denom as f64).is_infinite())
-            {
+            } else if a.is_infinite() {
                 true
             } else {
-                ($crate::afe_abs!($a - $b) / denom) <= $epsilon
+                ((a - b).abs() / a.abs()) <= epsilon
             }
         }
     };
