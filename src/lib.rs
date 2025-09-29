@@ -31,6 +31,7 @@
 //! [`assert_f64_near`]: macro.assert_f64_near.html
 //! [`assert_f32_near`]: macro.assert_f32_near.html
 
+#![no_std]
 use core::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 // IMPLEMENTATION
